@@ -1,14 +1,18 @@
 import ast
+import os
 import sqlite3
 import time
 import paho.mqtt.subscribe as subscribe
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB = os.path.join(BASE_DIR, 'database.db')
 
 broker = "hostname"
 topic = "topic"
 
 
 def db_worker(op: str, sql: str, values: tuple = None) -> None:
-    db = sqlite3.Connection(database="database.db")
+    db = sqlite3.Connection(database=DB)
     cursor = db.cursor()
 
     match op:
