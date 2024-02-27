@@ -1,0 +1,7 @@
+[server]
+hostname = "localhost"
+port = 9009
+
+[database]
+driver = "sqlite3"
+dbPath = "database.db"

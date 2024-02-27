@@ -5,19 +5,17 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
+	conf "httpApiServer/config"
+	"httpApiServer/db"
 	"log"
 	"net/http"
 	"strconv"
 )
 
-var config Config
+var CONFIG conf.Config
+var DB *sqlx.DB
 
 func getValues() ([]byte, error) {
-	db, err := sqlx.Open(config.Database.Driver, config.Database.DbPath)
-
-	if err != nil {
-		log.Fatal("Cannot connect to database: ", err)
-	}
 
 	type dbRecord struct {
 		Id        string  `db:"id"`
@@ -29,7 +27,7 @@ func getValues() ([]byte, error) {
 
 	var data []dbRecord
 
-	err2 := db.Select(&data, `SELECT * FROM bathhouse_sensors LIMIT 3`)
+	err2 := DB.Select(&data, `SELECT * FROM bathhouse_sensors LIMIT 3`)
 
 	if err2 != nil {
 		log.Fatal("Cannot read from database: ", err2)
@@ -47,7 +45,8 @@ func getTempJSON(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	config, _ = loadConfig(".")
+	CONFIG, _ = conf.LoadConfig(".")
+	DB = db.Connection(CONFIG.Database.Driver, CONFIG.Database.DbPath)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -55,6 +54,6 @@ func main() {
 	})
 	mux.HandleFunc("/bathhouse", getTempJSON)
 
-	addr := config.Server.Hostname + ":" + strconv.Itoa(int(config.Server.Port))
+	addr := CONFIG.Server.Hostname + ":" + strconv.Itoa(int(CONFIG.Server.Port))
 	log.Fatal(http.ListenAndServe(addr, mux))
 }
