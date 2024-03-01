@@ -1,0 +1,12 @@
+[Unit]
+Description=KAW Gatherer Script
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/kaw/smarthouse/gatherer
+ExecStart=/home/kaw/smarthouse/gatherer/venv/bin/python gatherer.py
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
