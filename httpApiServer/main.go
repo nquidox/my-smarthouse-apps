@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/jmoiron/sqlx"
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/lib/pq"
 	conf "httpApiServer/config"
 	"httpApiServer/db"
 	"log"
@@ -27,10 +27,10 @@ func getValues() ([]byte, error) {
 
 	var data []dbRecord
 
-	err2 := DB.Select(&data, `SELECT * FROM bathhouse_sensors LIMIT 3`)
+	err := DB.Select(&data, `SELECT * FROM bathhouse_sensors LIMIT 3`)
 
-	if err2 != nil {
-		log.Fatal("Cannot read from database: ", err2)
+	if err != nil {
+		log.Fatal("Cannot read from database: ", err)
 	}
 
 	return json.Marshal(data)

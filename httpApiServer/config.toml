@@ -3,5 +3,5 @@ hostname = "localhost"
 port = 9009
 
 [database]
-driver = "sqlite3"
-dbPath = "database.db"
+driver = "postgres"
+dbPath = "host= user= password= dbname= sslmode=disable"
