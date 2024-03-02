@@ -27,7 +27,7 @@ func getValues() ([]byte, error) {
 
 	var data []dbRecord
 
-	err := DB.Select(&data, `SELECT * FROM bathhouse_sensors LIMIT 3`)
+	err := DB.Select(&data, `SELECT * FROM bathhouse_sensors ORDER BY id DESC LIMIT 3`)
 
 	if err != nil {
 		log.Fatal("Cannot read from database: ", err)
