@@ -18,8 +18,7 @@ var DB *sqlx.DB
 func getValues() ([]byte, error) {
 
 	type dbRecord struct {
-		Id        string  `db:"id"`
-		HexId     string  `db:"hex_id"`
+		Name      string  `db:"name"`
 		TempValue float64 `db:"temp_value"`
 		Seconds   float64 `db:"seconds"`
 		DateTime  string  `db:"date_time"`
@@ -27,7 +26,13 @@ func getValues() ([]byte, error) {
 
 	var data []dbRecord
 
-	err := DB.Select(&data, `SELECT * FROM bathhouse_sensors ORDER BY id DESC LIMIT 3`)
+	err := DB.Select(&data, `
+		SELECT sa.name, MAX(bs.temp_value) AS temp_value, MAX(bs.seconds) AS seconds,
+		       MAX(bs.date_time) AS date_time
+		FROM bathhouse_sensors bs
+		INNER JOIN sensors_aliases sa ON bs.hex_id=sa.hex_id
+		GROUP BY sa.name;
+`)
 
 	if err != nil {
 		log.Fatal("Cannot read from database: ", err)
