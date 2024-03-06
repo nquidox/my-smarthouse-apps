@@ -34,7 +34,7 @@ def main():
                 (item["id"], item["temp"], time.time(), time.strftime("%d-%m-%Y %H:%M:%S", time.localtime()))
             )
         conn.commit()
-        time.sleep(1)
+        time.sleep(60)
 
     cursor.close()
     conn.close()
