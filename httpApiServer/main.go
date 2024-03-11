@@ -28,7 +28,6 @@ func getValues(limit int) ([]byte, error) {
 		sensorData := db.GetSensorData(DB, sensor, limit)
 
 		output = append(output, hourData{sensor, sensorData})
-		fmt.Println("output: ", output)
 	}
 
 	return json.Marshal(output)
@@ -36,12 +35,9 @@ func getValues(limit int) ([]byte, error) {
 
 func tempValuesHandler(limit int) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "GET" {
-			w.Header().Set("Content-Type", "application/json")
-			jsonResponse, _ := getValues(limit)
-			fmt.Fprintf(w, string(jsonResponse))
-		}
-
+		w.Header().Set("Content-Type", "application/json")
+		jsonResponse, _ := getValues(limit)
+		fmt.Fprintf(w, string(jsonResponse))
 	}
 }
 
@@ -51,12 +47,12 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /latest", tempValuesHandler(1))
+	mux.HandleFunc("GET /hour", tempValuesHandler(60))
+
+	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hello! Have a nice day.")
 	})
-
-	mux.HandleFunc("/latest", tempValuesHandler(1))
-	mux.HandleFunc("/hour", tempValuesHandler(60))
 
 	addr := CONFIG.Server.Hostname + ":" + strconv.Itoa(int(CONFIG.Server.Port))
 	log.Fatal(http.ListenAndServe(addr, mux))

@@ -1,6 +1,6 @@
 module httpApiServer
 
-go 1.21.6
+go 1.22
 
 require (
 	github.com/jmoiron/sqlx v1.3.5
